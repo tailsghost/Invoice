@@ -1,9 +1,8 @@
-﻿namespace Invoice.Interface
+﻿using Invoice.View;
+
+namespace Invoice.Interface;
+
+public interface ICondition
 {
-    public interface ICondition
-    {
-        decimal ConditionAtDecimal(string text);
-        int ConditionAtInt(string text);
-        string ConditionAtString(string text);
-    }
+    public T ConditionType<T>(string text, List<Product>? products = null);
 }

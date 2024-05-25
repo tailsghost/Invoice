@@ -11,8 +11,8 @@ public class DisplayView : IDisplayView
 
         Console.WriteLine($"Время создания накладной: {document.Header.date}\n" +
            $"Номер накладной: {document.Header.number}\n" +
-           $"Кому: {document.Header.get}\n" +
-           $"От кого {document.Header.send}\n");
+           $"Кому: {document.Header.to}\n" +
+           $"От кого {document.Header.from}\n");
 
         foreach (var product in document.Products.OrderBy(x => x.Id))
         {

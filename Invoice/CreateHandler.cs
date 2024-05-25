@@ -8,16 +8,18 @@ public class CreateHandler : ICreateHandler
 
     ICondition _condition = new Condition();
 
+    private List<Product> _products {  get; set; } = new List<Product>();
+
     public Header CreateHeader()
     {
 
-        var number = _condition.ConditionAtInt("Введите номер накладной!");
+        var number = _condition.ConditionType<int>("Введите номер накладной!");
 
-        var get = _condition.ConditionAtString("Введите для кого накладная");
+        var to = _condition.ConditionType<string>("Введите для кого накладная");
 
-        var send = _condition.ConditionAtString("Введите от кого накладная");
+        var from = _condition.ConditionType<string>("Введите от кого накладная");
 
-        var header = new Header(DateTime.Now, number, get, send);
+        var header = new Header(DateTime.Now, number, to, from);
 
         return header;
 
@@ -25,9 +27,9 @@ public class CreateHandler : ICreateHandler
 
     public Footer CreateFooter()
     {
-        var passed = _condition.ConditionAtString("Введите кто сдал накладную");
+        var passed = _condition.ConditionType<string>("Введите кто сдал накладную");
 
-        var accepted = _condition.ConditionAtString("Введите окто принял накладную");
+        var accepted = _condition.ConditionType<string>("Введите кто принял накладную");
 
         var footer = new Footer(passed, accepted);
 
@@ -38,26 +40,24 @@ public class CreateHandler : ICreateHandler
     public List<Product> CreateProduct()
     {
 
-        List<Product> products = new List<Product>();
-
         bool check = false;
 
         while (!check)
         {
-            var id = _condition.ConditionAtInt("Введите номер товара");
+            var id = _condition.ConditionType<int>("Введите номер товара", _products);
 
-            var name = _condition.ConditionAtString("Введите наименование товара");
+            var name = _condition.ConditionType<string>("Введите наименование товара");
 
-            var quantity = _condition.ConditionAtInt("Введите кол-во товара");
+            var quantity = _condition.ConditionType<int>("Введите кол-во товара");
 
-            var price = _condition.ConditionAtDecimal("Введите цену товара (Дробь через запятую)");
-
-            products.Add(new Product(id, name, quantity, price));
+            var price = _condition.ConditionType<decimal>("Введите цену товара (Дробь через запятую)");
 
             check = CheckInput();
+
+            _products.Add(new Product(id, name, quantity, price));
         }
 
-        return products;
+        return _products;
 
     }
 
@@ -71,7 +71,6 @@ public class CreateHandler : ICreateHandler
         {
             return false;
         }
-
 
         if (check.Key == ConsoleKey.N)
         {

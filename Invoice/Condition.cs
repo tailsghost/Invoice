@@ -1,55 +1,97 @@
 ﻿using Invoice.Interface;
+using Invoice.View;
+using System.ComponentModel;
 
 namespace Invoice.Invoice;
 
 public class Condition : ICondition
 {
 
-    IConvert _convert = new Convert();
+    private List<Product> products { get; set; } = new();
 
-
-    public int ConditionAtInt(string text)
+    public T ConditionType<T>(string text, List<Product>? products = null)
     {
+
+        if (products != null)
+            this.products = products;
+
         Console.WriteLine(text);
 
-        var check = _convert.ConvertToInt(Console.ReadLine());
+        T check = ConvertType<T>(Console.ReadLine());
 
-        while (check == 0)
-        {
-            Console.WriteLine(text);
-            check = _convert.ConvertToInt(Console.ReadLine());
+        bool CheckAddHandler = false;
+
+        while (!CheckAddHandler) {
+            
+            CheckAddHandler = AddHandler<T>(check, text);
+
+            if (CheckAddHandler)
+                break;
+
+            check = ConvertType<T>(Console.ReadLine());
         }
 
         return check;
     }
 
-    public decimal ConditionAtDecimal(string text)
+    private bool AddHandler<T>(T check, string text)
     {
-        Console.WriteLine(text);
 
-        var check = _convert.ConvertToDecimal(Console.ReadLine());
-
-        while (check == 0)
+        if (check is int checkInt && checkInt <= 0)
         {
+            Console.WriteLine("Значение не может быть меньше или равно 0, а так же должно быть целочисленное!");
             Console.WriteLine(text);
-            check = _convert.ConvertToDecimal(Console.ReadLine());
+
+            return false;
         }
 
-        return check;
+        if (check is decimal checkDecimal && checkDecimal <= 0)
+        {
+            Console.WriteLine("Значение не может быть меньше или равно 0");
+            Console.WriteLine(text);
+
+            return false;
+        }
+
+        if (check is int checkCount && products.Count > 0)
+        {
+            foreach (Product product in products)
+            {
+                if (product.Id == checkCount)
+                {
+                    Console.WriteLine("Номер элемента совпадает с тем, который был указан ранее!");
+                    Console.WriteLine(text);
+                    return false;
+                }
+                   
+            }
+        }
+
+        if (check is string checkString && checkString == "")
+        {
+            Console.WriteLine("Значение не может быть пустым");
+            Console.WriteLine(text);
+            return false;
+        }
+
+
+        return true;
     }
 
-    public string ConditionAtString(string text)
+   private static T ConvertType<T>(string input)
     {
-        Console.WriteLine(text);
-
-        var check = _convert.CheckToNotEmptyString(Console.ReadLine());
-
-        while (check == "")
+        T result = default(T);
+        var converter = TypeDescriptor.GetConverter(typeof(T));
+        if (converter != null)
         {
-            Console.WriteLine(text);
-            check = _convert.CheckToNotEmptyString(Console.ReadLine());
+            try
+            {
+                result = (T)converter.ConvertFromString(input);
+            }
+            catch
+            {
+            }
         }
-
-        return check;
+        return result;
     }
 }
