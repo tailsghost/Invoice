@@ -14,6 +14,8 @@ public class Condition : ICondition
 
         if (products != null)
             this.products = products;
+        if (products == null)
+            this.products = new();
 
         Console.WriteLine(text);
 
